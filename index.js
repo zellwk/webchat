@@ -7,9 +7,9 @@ const socketioJwt = require('socketio-jwt');
 const md = require('markdown').markdown;
 const db = mongoose.connection;
 
-const db_url = process.env.DB_URL;
+const DB_URL = process.env.DB_URL;
 
-mongoose.connect(db_url);
+mongoose.connect(DB_URL);
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.on('open', (cb) => {
@@ -24,7 +24,8 @@ const Message = mongoose.model('Message', {
 
 app.use(express.static('public'));
 
-// enable auth0 log in
+// enable auth0 log in from anywhere
+io.set('origins', '*domain.com*:*');
 io.use(socketioJwt.authorize({
   secret: Buffer(process.env.SOCKET_SECRET, 'base64'),
   handshake: true
@@ -35,7 +36,6 @@ io.on('connection', function(socket) {
   // send chat log on new user connection
   Message.model('Message').find(function(err, messages) {
     if (err) return console.error(err);
-    // io.emit('chat log', messages)
     socket.emit('chat log', messages);
   });
 
