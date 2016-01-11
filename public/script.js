@@ -1,6 +1,6 @@
 /* global $ Auth0Lock */
 document.querySelector('#login').addEventListener('click', function () {
-  var lock = new Auth0Lock('liTBz70OsVI5NDT8S6OmYzyrjwv0soN7', 'davidsng.auth0.com')
+  var lock = new Auth0Lock('uCxiKiGA49tLe3f9iXNsBp2XdzvBzImZ', 'zellwk.auth0.com')
   lock.show(function (err, profile, token) {
     if (err) {
       console.error('Something went wrong: ', err)
