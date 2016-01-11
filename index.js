@@ -8,18 +8,15 @@ const md = require('markdown').markdown;
 const db = mongoose.connection;
 
 const DB_URL = process.env.DB_URL;
+const Message = require('./collections/message');
+const Room = require('./collections/room');
+const User = require('./collections/user');
 
 mongoose.connect(DB_URL);
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.on('open', (cb) => {
   console.log('Database connected');
-});
-
-const Message = mongoose.model('Message', {
-  'username': String,
-  'message': String,
-  'timestamp': Object
 });
 
 app.use(express.static('public'));
