@@ -6,7 +6,7 @@
   "scripts": {
     "start": "forever index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard"
   },
   "repository": {
     "type": "git",
@@ -35,6 +35,7 @@
     "socketio-jwt": "^4.3.3"
   },
   "devDependencies": {
-    "chalk": "^1.1.1"
+    "chalk": "^1.1.1",
+    "standard": "^5.4.1"
   }
 }
