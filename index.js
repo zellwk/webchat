@@ -9,7 +9,7 @@ const md = require('markdown').markdown
 const db = mongoose.connection
 
 const Message = require('./collections/message')
-// const Room = require('./collections/room')
+const Room = require('./collections/room')
 const User = require('./collections/user')
 
 const DB_URL = process.env.DB_URL
@@ -33,9 +33,7 @@ io.on('connection', function (socket) {
   console.log('user connected')
 
   socket.on('get user', function (username) {
-    User.findOne({
-      username: username
-    }, (err, user) => {
+    User.findOne({username: username}, (err, user) => {
       if (err) return socket.emit('get user', err, null)
       if (!user) {
         return socket.emit('get user', {
@@ -60,7 +58,7 @@ io.on('connection', function (socket) {
       .then(data => {
         socket.emit('create user', null, 'User created')
       })
-      .catch(err => {
+      .reject(err => {
         socket.emit('create user', err, null)
       })
   })
@@ -73,6 +71,7 @@ io.on('connection', function (socket) {
       return socket.emit('join room', 'no specified room to join', null)
     }
 
+    // Add room to user
     User.update({
       username: data.user
     }, {
@@ -86,10 +85,28 @@ io.on('connection', function (socket) {
     socket.join(data.room, function (err) {
       socket.emit('join room', err, `Joined ${data.room}`)
     })
+
+    // Create room if not found
+    Room.findOne({name: data.room}, (err, docs) => {
+      if (err) return socket.emit('join room', err, null)
+      if (!docs) {
+        var room = new Room({
+          name: data.room,
+          messages: []
+        })
+
+        room.save()
+          .then(room => {
+            socket.emit('join room', null, `Saved ${data.room} to Database`)
+          })
+          .reject(err => {
+            socket.emit('join room', err, null)
+          })
+      }
+    })
   })
 
   socket.on('leave room', function (data) {
-    console.log('leaving room')
     if (!data.user) {
       return socket.emit('leave room', 'leave room requires user', null)
     }
@@ -114,11 +131,25 @@ io.on('connection', function (socket) {
 
   // Note: Broadcasts to everyone in the room except for self.
   socket.on('message room', function (data) {
-    socket.to(data.room).emit('message room', {
-      message: data.message
-    })
+    var now = new Date()
+    var message = {
+      sender: data.sender,
+      message: data.message,
+      time: now.toISOString()
+    }
+
+    Room.findOneAndUpdate({name: data.room},
+      {$push: {messages: message}},
+      err => {
+        // TODO: Figure out how to emit errors only to current user (for all methods)
+        if (err) return socket.emit('message room', err, null)
+        return socket.to(data.room).emit('message room', null, message)
+      }
+    )
   })
 
+  // Legacy code.
+  // For those who haven't gotten basic chat functionality. Others should use rooms.
   // send chat log on new user connection
   Message.model('Message').find(function (err, messages) {
     if (err) return console.error(err)
@@ -131,13 +162,11 @@ io.on('connection', function (socket) {
     message.save(function (err) {
       if (err) return console.error(err)
     })
-    // console.log(`Message: ${msg.message}`)
     io.emit('chat message', msg)
   })
 
   socket.on('typing', function (input) {
     io.emit('typing', input)
-    // console.log(input)
   })
 
   socket.on('disconnect', function () {
