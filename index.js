@@ -31,6 +31,7 @@ io.use(socketioJwt.authorize({
 
 io.on('connection', function (socket) {
   console.log('user connected')
+  socket.emit('connected', 'Socket Connected')
 
   socket.on('get user', function (username) {
     User.findOne({username: username}, (err, user) => {
