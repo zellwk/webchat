@@ -36,7 +36,7 @@ function startChat () {
   //   'query': 'token=' + window.localStorage.getItem('userToken')
   // })
 
-  var socket = io.connect('http://localhost:3000/', {
+  var socket = io.connect(window.location.origin, {
     'query': 'token=' + window.localStorage.getItem('userToken')
   })
   var profile = JSON.parse(window.localStorage.getItem('profile'))
