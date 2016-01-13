@@ -2,11 +2,27 @@
 - Auth0 ID: uCxiKiGA49tLe3f9iXNsBp2XdzvBzImZ
 - Auth0 domain: zellwk.auth0.com
 
+Once you get the Auth0 token, use your token to connect to the chat server
+
+```
+lock.show(function (err, profile, token) {
+  if (err) return console.error('Something went wrong: ', err)
+  
+  // Connect to chat server here
+})
+```
+
 Note: Make sure you are on localhost:3000 or localhost:4000 if you are testing your app locally.
 
 ## Connecting to chat server
 
 URL to connect to chat server: http://ga-webchat.herokuapp.com/
+
+```
+var socket = io.connect('http://ga-webchat.herokuapp.com/', {
+  'query': 'token=' + token
+})
+```
 
 ## Level 1: Get this working first
 
