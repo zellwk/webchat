@@ -6,7 +6,9 @@ Note: Make sure you are on localhost:3000 or localhost:4000 if you are testing y
 
 ## Connecting to chat server
 
-URL to connect to chat server: http://ga-webchat.herokuapp.com/
+URL to connect to chat server: http://ga-webchat.herokuapp.com/. 
+
+The chat server will emit a `connected` event when you have successfully connected to it. 
 
 ## Level 1: Get this working first
 
