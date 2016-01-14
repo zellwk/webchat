@@ -104,8 +104,11 @@ io.on('connection', function (socket) {
             socket.emit('join room', err, null)
           })
       }
-      console.log(docs.messages);
-      socket.emit('room log', docs.messages)
+      console.log(docs);
+      socket.emit('room log', {
+        messages: docs.messages,
+        room: docs.name
+      })
     })
   })
 
@@ -136,7 +139,7 @@ io.on('connection', function (socket) {
   socket.on('message room', function (data) {
     var now = new Date()
     var message = {
-      sender: data.sender,
+      username: data.sender,
       message: data.message,
       time: now.toISOString()
     }
