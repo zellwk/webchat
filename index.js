@@ -104,6 +104,8 @@ io.on('connection', function (socket) {
             socket.emit('join room', err, null)
           })
       }
+      console.log(docs.messages);
+      socket.emit('room log', docs.messages)
     })
   })
 
@@ -155,6 +157,13 @@ io.on('connection', function (socket) {
   Message.model('Message').find(function (err, messages) {
     if (err) return console.error(err)
     socket.emit('chat log', messages)
+  })
+
+  socket.on('chat log', function () {
+    Message.model('Message').find(function (err, messages) {
+      if (err) return console.error(err)
+      socket.emit('chat log', messages)
+    })
   })
 
   socket.on('chat message', function (msg) {
