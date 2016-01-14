@@ -4,7 +4,7 @@ const roomSchema = new mongoose.Schema({
   name: String,
   messages: [
     {
-      sender: String,
+      username: String,
       message: String,
       date: Date
     }
